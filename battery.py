@@ -25,11 +25,12 @@ class Battery:
             return 0.0
         
         energy_in = power * t_h
-        energy_stored =  energy_in * self.eff
-        actual_stored = min(energy_stored,room_left) #only store based on how much room is left
+        max_input = room_left / self.eff 
+        actual_input =  min(energy_in, max_input)
+        actual_stored = actual_input * self.eff
 
         self.soc += actual_stored /self.capacity_kwh #update the state of soc
-        return actual_stored #return amount of energy stored 
+        return actual_input #return amount of energy stored 
     
     def discharge(self, power: float, t_h: float) -> float: #discharge function
         power = min(max(power, 0.0), self.max_discharge_kw)

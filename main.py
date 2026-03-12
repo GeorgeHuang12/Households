@@ -28,6 +28,7 @@ for _, row in merge_data.iterrows():
 
 results_df = pd.DataFrame(results)
 
+pd.set_option("display.max_rows", None)
 print(results_df[[
     "DateTime",
     "demand",
@@ -37,18 +38,7 @@ print(results_df[[
     "import_energy",
     "export_energy",
     "soc"
-]].head(24))
-
-print(results_df[[
-    "DateTime",
-    "demand",
-    "pv",
-    "battery_charged",
-    "battery_discharged",
-    "import_energy",
-    "export_energy",
-    "soc"
-]].tail(24))
+]][-150:])
 
 
 

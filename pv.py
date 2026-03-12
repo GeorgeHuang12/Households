@@ -13,7 +13,7 @@ def pv_data() -> pd.DataFrame:
     pv_df = pv_df[["ob_end_time", "glbl_irad_amt"]].copy()
     pv_df = pv_df.rename(columns={"ob_end_time": "DateTime"})
 
-    pv_df["DateTime"] = pd.to_datetime(pv_df["DateTime"], errors="coerce")
+    pv_df["DateTime"] = pd.to_datetime(pv_df["DateTime"], format="mixed", errors="coerce")
     pv_df["glbl_irad_amt"] = pd.to_numeric(
         pv_df["glbl_irad_amt"],
         errors="coerce"
@@ -26,8 +26,9 @@ def pv_data() -> pd.DataFrame:
 
     return pv_df
 
+
 # pv calculation from irradance
-def pv_cal(glbl_irad_amt: float, pv_size_kwp : float = 4.0, performance_ratio : float = 0.85) -> float:
+def pv_cal(glbl_irad_amt: float, pv_size_kwp : float = 12.0, performance_ratio : float = 0.85) -> float:
     solar_energy = glbl_irad_amt / 3600
     pv_kwh = solar_energy * performance_ratio * pv_size_kwp
     return pv_kwh

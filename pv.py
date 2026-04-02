@@ -1,4 +1,5 @@
 import pandas as pd
+import random
 
 def pv_data() -> pd.DataFrame:
     pv_2012 = pd.read_csv("D:/uni/mainpro/data set/2012.csv", skiprows=78)
@@ -26,10 +27,19 @@ def pv_data() -> pd.DataFrame:
 
     return pv_df
 
+def pv_setting() -> tuple[float, float]:
+    area = [50, 60, 70, 80, 90]
+    efficiency =  [0.9, 0.95, 0.99]
+    pv_area = random.choice(area)
+    pv_efficiency = random.choice(efficiency)
+
+    return pv_area, pv_efficiency
+
 
 # pv calculation from irradance
-def pv_cal(glbl_irad_amt: float, pv_size_kwp : float = 12.0, performance_ratio : float = 0.85) -> float:
+def pv_cal(glbl_irad_amt: float, pv_area : float, pv_efficiency: float, performance_ratio : float = 0.85) -> float:
     solar_energy = glbl_irad_amt / 3600
-    pv_kwh = solar_energy * performance_ratio * pv_size_kwp
+    pv_kwh = solar_energy * performance_ratio * pv_area * pv_efficiency
     return pv_kwh
+
 

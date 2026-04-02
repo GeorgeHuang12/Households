@@ -1,14 +1,15 @@
 import pandas as pd 
 from agent import Household
 from data_london import demand_data
-from pv import pv_data, pv_cal
+from pv import pv_data, pv_cal, pv_setting 
 
 hourly_data = demand_data("MAC000002")
 pv_df = pv_data()
+pv_area, pv_efficiency = pv_setting()
 
 merge_data = pd.merge(hourly_data,  pv_df[["DateTime", "glbl_irad_amt"]], on = "DateTime",  how = "inner")
 
-merge_data["pv_kwh"] = merge_data["glbl_irad_amt"].apply(lambda x : pv_cal(x))
+merge_data["pv_kwh"] = merge_data["glbl_irad_amt"].apply(lambda x : pv_cal(glbl_irad_amt=x, pv_area=pv_area, pv_efficiency=pv_efficiency))
 
 results = []
 

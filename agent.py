@@ -15,9 +15,7 @@ class Household:
             battery_discharged  = self.battery.discharge(power, t_h)
         
         elif energy_before < 0: #if energy surplus, charge battery
-            surplus = abs(energy_before) 
-            power = surplus /  t_h
-            battery_charged = self.battery.charge(power, t_h)
+            battery_charged = 0.0
         
         energy_after = demand - pv - battery_discharged + battery_charged #calculate final energy after discharged or charged from battery
 

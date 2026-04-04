@@ -28,8 +28,8 @@ def pv_data() -> pd.DataFrame:
     return pv_df
 
 def pv_setting() -> tuple[float, float]:
-    area = [50, 60, 70, 80, 90]
-    efficiency =  [0.9, 0.95, 0.99]
+    area = [10, 20, 30]
+    efficiency =  [0.2, 0.25]
     pv_area = random.choice(area)
     pv_efficiency = random.choice(efficiency)
 

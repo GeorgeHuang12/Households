@@ -1,5 +1,27 @@
-
+import random
 from dataclasses import dataclass
+
+
+
+def battery_setting(avg_demand: float) -> tuple[float, float, float]:
+    if avg_demand < 0.4:
+        capacity = [4.0, 5.0, 6.0]
+        max_charge_kw = 2.0
+        max_discharge_kw = 2.0
+
+    elif avg_demand < 0.8:
+        capacity = [6.5, 8.0, 10.0]
+        max_charge_kw = 3.0
+        max_discharge_kw = 3.0
+
+    else:
+        capacity = [10.0, 12.0, 13.5]
+        max_charge_kw = 4.0
+        max_discharge_kw = 4.0
+
+    capacity_kwh = random.choice(capacity)
+
+    return capacity_kwh, max_charge_kw, max_discharge_kw
 
 @dataclass 
 class Battery:  
@@ -30,7 +52,7 @@ class Battery:
         actual_stored = actual_input * self.eff
 
         self.soc += actual_stored /self.capacity_kwh #update the state of soc
-        return actual_input #return amount of energy stored 
+        return actual_input #return amount of energy absorbed by battery from surplus
     
     def discharge(self, power: float, t_h: float) -> float: #discharge function
         power = min(max(power, 0.0), self.max_discharge_kw)

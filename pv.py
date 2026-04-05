@@ -27,13 +27,20 @@ def pv_data() -> pd.DataFrame:
 
     return pv_df
 
-def pv_setting() -> tuple[float, float]:
-    area = [10, 20, 30]
-    efficiency =  [0.2, 0.25]
+def pv_setting(avg_demand : float) -> tuple[float, float]:
+    if avg_demand < 0.4:
+        area = [10.0, 11.0, 12.0]
+    elif avg_demand < 0.8:
+        area = [14.0, 15.0, 16.0]
+    else:
+        area = [18.0, 19.0, 20.0]
+
+    efficiency = [0.19, 0.20, 0.21, 0.22]
+
     pv_area = random.choice(area)
     pv_efficiency = random.choice(efficiency)
-
     return pv_area, pv_efficiency
+
 
 
 # pv calculation from irradance

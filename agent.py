@@ -1,21 +1,31 @@
-from battery import Battery
+from battery import Battery, battery_setting
 
 class Household:
-    def __init__(self, h_id: int): #set up function for each new house
-        self.h_id = h_id 
-        self.battery = Battery()
+    def __init__(self, h_id: int, avg_demand: float):
+        self.h_id = h_id
+
+        battery_capacity_kwh, max_charge_kw, max_discharge_kw = battery_setting(avg_demand)
+        self.h_id = h_id
+        self.battery = Battery(capacity_kwh=battery_capacity_kwh, max_charge_kw=max_charge_kw, max_discharge_kw = max_discharge_kw)
+
 
     def run_slot(self, demand: float, pv: float, t_h: float) -> dict:
         energy_before =  demand - pv
         battery_charged = 0.0 #energy abosorbed by battery
         battery_discharged = 0.0 #energy delivered by battery
 
+        reserve_soc = 0.5
+
         if energy_before > 0: #if energy defict, discharge battery
             power = energy_before / t_h #change from energy to power
             battery_discharged  = self.battery.discharge(power, t_h)
         
         elif energy_before < 0: #if energy surplus, charge battery
-            battery_charged = 0.0
+            surplus = abs(energy_before)
+
+            if self.battery.soc < reserve_soc:
+                power = surplus / t_h
+                battery_charged = self.battery.charge(power, t_h)
         
         energy_after = demand - pv - battery_discharged + battery_charged #calculate final energy after discharged or charged from battery
 

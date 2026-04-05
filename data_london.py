@@ -1,27 +1,29 @@
-import pandas as pd 
+import pandas as pd
 
-def demand_data(household : str = "MAC000002") -> pd.DataFrame:
-    df = pd.read_csv("D:/uni/mainpro/data set/Small LCL Data/LCL-June2015v2_0.csv")
+def unscale(arr_scaled, min_val, max_val):
+    """
+    Convert scaled values back to raw kWh.
+    Works for both 1D and 2D arrays.
+    """
+    return arr_scaled * (max_val - min_val) + min_val
 
-    house_id = df[df['LCLid'] == household].copy()
-    house_id = house_id.iloc[:-1]
+def demand_data(household: str = "MAC001249") -> pd.DataFrame:
+    df = pd.read_parquet(r"D:\uni\mainpro\Households\selected_100_normalised_ph.parquet")
 
-    house_id["DateTime"] = pd.to_datetime(house_id["DateTime"])
-    house_id["KWH/hh (per half hour)"] = pd.to_numeric(house_id["KWH/hh (per half hour) "],  errors = "coerce" )
+    house_id = df[df["LCLid"] == household].copy()
 
-    house_id = house_id.dropna(subset=["DateTime", "KWH/hh (per half hour)"])
+    house_id["DateTime"] = pd.to_datetime(house_id["DateTime"], errors="coerce")
+    house_id["kwh"] = pd.to_numeric(house_id["kwh"], errors="coerce")
 
-    house_id["DateTime"] = house_id["DateTime"] - pd.Timedelta(minutes=30)
+    house_id = house_id.dropna(subset=["DateTime", "kwh"])
     house_id = house_id.sort_values("DateTime")
-    house_id = house_id.set_index("DateTime")
 
-    hourly_data = pd.DataFrame(house_id["KWH/hh (per half hour)"].resample("1h").sum())
-
-    hourly_data = hourly_data.rename(columns={"KWH/hh (per half hour)": "demand_kwh"})
-
-    hourly_data = hourly_data.reset_index()
+    hourly_data = house_id[["DateTime", "kwh"]].copy()
+    hourly_data = hourly_data.rename(columns={"kwh": "demand_kwh"})
+    hourly_data = hourly_data.reset_index(drop=True)
 
     return hourly_data
+
 
 
 

@@ -1,11 +1,13 @@
 import pandas as pd 
+import matplotlib.pyplot as plt
 from agent import Household
 from data_london import demand_data
 from pv import pv_data, pv_cal, pv_setting 
 
-hourly_data = demand_data("MAC000002")
+hourly_data = demand_data("MAC001249")
 pv_df = pv_data()
-pv_area, pv_efficiency = pv_setting()
+avg_demand = hourly_data["demand_kwh"].mean()
+pv_area, pv_efficiency = pv_setting(avg_demand)
 
 merge_data = pd.merge(hourly_data,  pv_df[["DateTime", "glbl_irad_amt"]], on = "DateTime",  how = "inner")
 
@@ -13,7 +15,7 @@ merge_data["pv_kwh"] = merge_data["glbl_irad_amt"].apply(lambda x : pv_cal(glbl_
 
 results = []
 
-house = Household(h_id=1)
+house = Household(h_id=1, avg_demand = avg_demand)
 
 for _, row in merge_data.iterrows():
     demand = row["demand_kwh"]
@@ -29,6 +31,10 @@ for _, row in merge_data.iterrows():
 
 results_df = pd.DataFrame(results)
 
+
+print("average demand", avg_demand)
+
+
 pd.set_option("display.max_rows", None)
 print(results_df[[
     "DateTime",
@@ -39,9 +45,77 @@ print(results_df[[
     "import_energy",
     "export_energy",
     "soc"
-]][-150:])
+]][10000: 10100])
 
 
+results_df["DateTime"] = pd.to_datetime(results_df["DateTime"])
+results_df = results_df.sort_values("DateTime")
 
+# choose a smaller window first so the graph is easier to read
+plot_df = results_df.tail(168).copy()   # last 168 hours = 7 days
+
+
+# 1. Demand and PV
+plt.figure(figsize=(12, 5))
+plt.plot(plot_df["DateTime"], plot_df["demand"], label="Demand (kWh)")
+plt.plot(plot_df["DateTime"], plot_df["pv"], label="PV (kWh)")
+plt.xlabel("DateTime")
+plt.ylabel("Energy (kWh)")
+plt.title("Demand and PV")
+plt.legend()
+plt.grid(True)
+plt.tight_layout()
+plt.show()
+
+
+# 2. Import and Export
+plt.figure(figsize=(12, 5))
+plt.plot(plot_df["DateTime"], plot_df["import_energy"], label="Import Energy (kWh)")
+plt.plot(plot_df["DateTime"], plot_df["export_energy"], label="Export Energy (kWh)")
+plt.xlabel("DateTime")
+plt.ylabel("Energy (kWh)")
+plt.title("Import and Export")
+plt.legend()
+plt.grid(True)
+plt.tight_layout()
+plt.show()
+
+
+# 3. Battery Charge and Discharge
+plt.figure(figsize=(12, 5))
+plt.plot(plot_df["DateTime"], plot_df["battery_charged"], label="Battery Charged (kWh)")
+plt.plot(plot_df["DateTime"], plot_df["battery_discharged"], label="Battery Discharged (kWh)")
+plt.xlabel("DateTime")
+plt.ylabel("Energy (kWh)")
+plt.title("Battery Charge and Discharge")
+plt.legend()
+plt.grid(True)
+plt.tight_layout()
+plt.show()
+
+
+# 4. SOC
+plt.figure(figsize=(12, 5))
+plt.plot(plot_df["DateTime"], plot_df["soc"], label="SOC")
+plt.xlabel("DateTime")
+plt.ylabel("State of Charge")
+plt.title("Battery SOC")
+plt.legend()
+plt.grid(True)
+plt.tight_layout()
+plt.show()
+
+
+# 5. Energy balance before and after battery
+plt.figure(figsize=(12, 5))
+plt.plot(plot_df["DateTime"], plot_df["energy_before"], label="Energy Before Battery (kWh)")
+plt.plot(plot_df["DateTime"], plot_df["energy_after"], label="Energy After Battery (kWh)")
+plt.xlabel("DateTime")
+plt.ylabel("Energy (kWh)")
+plt.title("Energy Balance Before and After Battery")
+plt.legend()
+plt.grid(True)
+plt.tight_layout()
+plt.show()
 
 

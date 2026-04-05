@@ -1,10 +1,11 @@
 import pandas as pd 
 import matplotlib.pyplot as plt
+import os 
 from agent import Household
 from data_london import demand_data
 from pv import pv_data, pv_cal, pv_setting 
 
-hourly_data = demand_data("MAC001249")
+hourly_data = demand_data("MAC001267")
 pv_df = pv_data()
 avg_demand = hourly_data["demand_kwh"].mean()
 pv_area, pv_efficiency = pv_setting(avg_demand)
@@ -48,11 +49,20 @@ print(results_df[[
 ]][10000: 10100])
 
 
+print("Average demand:", avg_demand)
+print("PV area:", pv_area)
+print("PV efficiency:", pv_efficiency)
+print("Battery capacity:", house.battery.capacity_kwh)
+
 results_df["DateTime"] = pd.to_datetime(results_df["DateTime"])
 results_df = results_df.sort_values("DateTime")
 
 # choose a smaller window first so the graph is easier to read
 plot_df = results_df.tail(168).copy()   # last 168 hours = 7 days
+
+
+plot_folder = "plots"
+os.makedirs(plot_folder, exist_ok=True)
 
 
 # 1. Demand and PV
@@ -65,7 +75,8 @@ plt.title("Demand and PV")
 plt.legend()
 plt.grid(True)
 plt.tight_layout()
-plt.show()
+plt.savefig(os.path.join(plot_folder, "01_demand_pv.png"))
+plt.close()
 
 
 # 2. Import and Export
@@ -78,7 +89,8 @@ plt.title("Import and Export")
 plt.legend()
 plt.grid(True)
 plt.tight_layout()
-plt.show()
+plt.savefig(os.path.join(plot_folder, "02_import_export.png"))
+plt.close()
 
 
 # 3. Battery Charge and Discharge
@@ -91,7 +103,8 @@ plt.title("Battery Charge and Discharge")
 plt.legend()
 plt.grid(True)
 plt.tight_layout()
-plt.show()
+plt.savefig(os.path.join(plot_folder, "03_battery_charge_discharge.png"))
+plt.close()
 
 
 # 4. SOC
@@ -103,7 +116,8 @@ plt.title("Battery SOC")
 plt.legend()
 plt.grid(True)
 plt.tight_layout()
-plt.show()
+plt.savefig(os.path.join(plot_folder, "04_soc.png"))
+plt.close()
 
 
 # 5. Energy balance before and after battery
@@ -116,6 +130,7 @@ plt.title("Energy Balance Before and After Battery")
 plt.legend()
 plt.grid(True)
 plt.tight_layout()
-plt.show()
+plt.savefig(os.path.join(plot_folder, "05_energy_before_after.png"))
+plt.close()
 
 

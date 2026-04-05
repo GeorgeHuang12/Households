@@ -4,20 +4,31 @@ from dataclasses import dataclass
 
 
 def battery_setting(avg_demand: float) -> tuple[float, float, float]:
-    if avg_demand < 0.4:
+    if avg_demand < 0.15:
+        capacity = [2.0, 3.0, 4.0]
+        max_charge_kw = 1.5
+        max_discharge_kw = 1.5
+
+    elif avg_demand < 0.35:
         capacity = [4.0, 5.0, 6.0]
         max_charge_kw = 2.0
         max_discharge_kw = 2.0
 
-    elif avg_demand < 0.8:
+    elif avg_demand < 0.60:
         capacity = [6.5, 8.0, 10.0]
         max_charge_kw = 3.0
         max_discharge_kw = 3.0
 
-    else:
+    elif avg_demand < 0.90:
         capacity = [10.0, 12.0, 13.5]
         max_charge_kw = 4.0
         max_discharge_kw = 4.0
+
+    else:
+        capacity = [13.5, 15.0, 16.0]
+        max_charge_kw = 5.0
+        max_discharge_kw = 5.0
+
 
     capacity_kwh = random.choice(capacity)
 

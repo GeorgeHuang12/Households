@@ -28,12 +28,20 @@ def pv_data() -> pd.DataFrame:
     return pv_df
 
 def pv_setting(avg_demand : float) -> tuple[float, float]:
-    if avg_demand < 0.4:
-        area = [10.0, 11.0, 12.0]
-    elif avg_demand < 0.8:
-        area = [14.0, 15.0, 16.0]
+    if avg_demand < 0.15:
+        area = [6.0, 8.0, 10.0]
+
+    elif avg_demand < 0.35:
+        area = [8.0, 10.0, 12.0]
+
+    elif avg_demand < 0.60:
+        area = [10.0, 12.0, 14.0, 16.0]
+
+    elif avg_demand < 0.90:
+        area = [14.0, 16.0, 18.0, 20.0]
+
     else:
-        area = [18.0, 19.0, 20.0]
+        area = [18.0, 20.0, 22.0, 24.0]
 
     efficiency = [0.19, 0.20, 0.21, 0.22]
 
